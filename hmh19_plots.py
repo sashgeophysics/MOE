@@ -52,6 +52,7 @@ def compare_Ftl_models():
     plt.plot(obj2.tma,obj2.PH2O/1.0e5,ls='--',color='darkorange',linewidth=4)
     plt.ylabel(r"${P_{H2O}}$ (bar)",fontsize=30)
     plt.xlabel('Time (Ma)',fontsize=30)
+    
     plt.subplot(2,2,4)
     plt.plot(obj1.tma,obj1.MH2OMO,color='forestgreen',linewidth=4)
     plt.plot(obj2.tma,obj2.MH2OMO,ls='--',color='darkorange',linewidth=4)
@@ -206,16 +207,16 @@ plt.xlabel(r'$K^\ast$')
 ##############################################
 plt.figure(figsize=(16,10))
 
-plt.semilogy(REE,(mars1.CREEMO_final/mars1.CI_REE),'s',color='#ff4949',markersize=20)
-plt.semilogy(REE,(mars1.NWA1068/mars1.CI_REE),'o',color='maroon',markersize=20)
-plt.semilogy(REE,(mars1.CREERM_final/mars1.CI_REE),'s',color='#005668',markersize=20)
+plt.semilogy(REE,(mars1.CREEMO_final/mars1.CI_REE),'s',color='darkgreen',markersize=20)
+plt.semilogy(REE,(mars1.NWA1068/mars1.CI_REE),'o',color='moccasin',markersize=20)
+plt.semilogy(REE,(mars1.CREERM_final/mars1.CI_REE),'o',color='darkgreen',markersize=20)
 
 #plt.semilogy(REE,(mars1.NWA2737/mars1.CI_REE),'o',color='darkkhaki',markersize=20)
 plt.legend([ r'MO after 99.5$\%$ crystallization', 'NWA1068','RM after 99.5$\%$ crystallization'],loc=4,fancybox=True,framealpha=0.7)
 plt.ylabel('Concentration/Chondrite',fontsize=30)
-plt.semilogy(REE,(mars1.CREEMO_final/mars1.CI_REE),color='#ff4949')
-plt.semilogy(REE,(mars1.CREERM_final/mars1.CI_REE),color='#005668')
-plt.semilogy(REE,(mars1.NWA1068/mars1.CI_REE),'-',color='maroon')
+plt.semilogy(REE,(mars1.CREEMO_final/mars1.CI_REE),color='darkgreen')
+plt.semilogy(REE,(mars1.CREERM_final/mars1.CI_REE),color='darkgreen')
+plt.semilogy(REE,(mars1.NWA1068/mars1.CI_REE),'-',color='#005668')
 
 ax=plt.gca()
 plt.xticks(REE,REE_label,rotation='vertical',fontsize=25)
@@ -335,7 +336,29 @@ plt.semilogy(CO2_mass,final_CO2_const*1.0e6,'o',markersize=20,markeredgecolor='d
 plt.ylabel('Mantle C (ppm)')
 #plt.xlim(0.0,3.5)
 plt.xlabel(r'Initial $\mathrm{CO_2}$ (kg)')
+##############################################
+# Plot: compare REE concentrations
+# for dyamic trapping and constant Ftl
+##############################################
+plt.figure(figsize=(16,10))
 
+
+plt.semilogy(REE,(mars2.all_REE_init_conc/mars2.CI_REE),'s',color='lightsalmon',markersize=20)
+plt.semilogy(REE,(mars2.CREERM_final/mars2.CI_REE),'o',color='darkgreen',markersize=20)
+
+plt.semilogy(REE,(mars2_const.CREERM_final/mars2.CI_REE),'o',markeredgecolor='darkorange',markersize=20, markerfacecolor='none',markeredgewidth=3)
+
+
+plt.legend([ r'Initial abundance','RM, dynamic trapping','RM, constant $F_{tl}$ '],loc=4,fancybox=True,framealpha=0.7)
+
+plt.ylabel('Concentration/Chondrite',fontsize=30)
+
+plt.semilogy(REE,(mars2.CREERM_final/mars2.CI_REE),color='darkgreen')
+plt.semilogy(REE,(mars2.all_REE_init_conc/mars2.CI_REE),'-',color='lightsalmon')
+plt.semilogy(REE,(mars2_const.CREERM_final/mars2_const.CI_REE),'--',color='darkorange')
+
+ax=plt.gca()
+plt.xticks(REE,REE_label,rotation='vertical',fontsize=25)
 ######################################################################
 
 ##########################################################################
