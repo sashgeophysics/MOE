@@ -1,5 +1,27 @@
 from mars_module import*
+def plot_profile(obj):
+    """This function plots a profile of RM concentrations
+    the input object should be of class Mars_read"""
+    f2=obj.output_filenames(const=False)
+    data2=np.loadtxt(f2[3],delimiter=',')
+    obj.CCO2RM   = data2[:,4]
+    del data2
+    data2=np.loadtxt(f2[0],delimiter=',')
+    obj.akm      = data2[:,2]
+    del data2
+    data2=np.loadtxt(f2[2],delimiter=',')
+    obj.CH2ORM   = data2[:,4]
+    del data2,f2
 
+
+
+    plt.figure(figsize=(10,12))
+    plt.plot(obj.CCO2RM*1.0e6,obj.akm,'dimgray',lw=4)
+    plt.plot(obj.CH2ORM*1.0e6,obj.akm,'teal',lw=4,ls='dashed')
+    plt.legend(['Total C',r'$\mathrm{H_2O}$'],fancybox=True\
+               ,framealpha=0.7,loc=4)
+    plt.xlabel(r'Concentration in the RM (ppm)')
+    plt.ylabel('Height above CMB (km)')
 def compare_Ftl_models():
     """Compares the thermal evolutions of two objects
     The second object should have a constant trapped
@@ -205,22 +227,25 @@ plt.xlabel(r'$K^\ast$')
 # Plot: compare REE concentrations
 # 
 ##############################################
-plt.figure(figsize=(16,10))
+
+plt.figure(figsize=(16,12))
 
 plt.semilogy(REE,(mars1.CREEMO_final/mars1.CI_REE),'s',color='darkgreen',markersize=20)
 plt.semilogy(REE,(mars1.NWA1068/mars1.CI_REE),'o',color='moccasin',markersize=20)
+plt.semilogy(REE,(mars1.shergotty/mars1.CI_REE),'o',color='tomato',markersize=20)
+plt.semilogy(REE,(mars1.zagami/mars1.CI_REE),'o',color='#D4B1B1',markersize=20)
 plt.semilogy(REE,(mars1.CREERM_final/mars1.CI_REE),'o',color='darkgreen',markersize=20)
 
-#plt.semilogy(REE,(mars1.NWA2737/mars1.CI_REE),'o',color='darkkhaki',markersize=20)
-plt.legend([ r'MO after 99.5$\%$ crystallization', 'NWA1068','RM after 99.5$\%$ crystallization'],loc=4,fancybox=True,framealpha=0.7)
+plt.legend([ r'MO after 99.5$\%$ crystallization', 'NWA1068','Shergotty','Zagami','RM after 99.5$\%$ crystallization'],loc=4,fancybox=True,framealpha=0.7)
 plt.ylabel('Concentration/Chondrite',fontsize=30)
 plt.semilogy(REE,(mars1.CREEMO_final/mars1.CI_REE),color='darkgreen')
 plt.semilogy(REE,(mars1.CREERM_final/mars1.CI_REE),color='darkgreen')
 plt.semilogy(REE,(mars1.NWA1068/mars1.CI_REE),'-',color='#005668')
+plt.semilogy(REE,(mars1.shergotty/mars1.CI_REE),'-',color='darkgreen')
+plt.semilogy(REE,(mars1.zagami/mars1.CI_REE),'-',color='darkgreen')
 
 ax=plt.gca()
 plt.xticks(REE,REE_label,rotation='vertical',fontsize=25)
-
 
 
 ############################
@@ -370,6 +395,15 @@ plt.xticks(REE,REE_label,rotation='vertical',fontsize=25)
 
 compare_Ftl_models()
 ##########################################################################
+#######################################################
+## Create a profile of H2O and CO2 in the RM after
+## crystallization ends
+## May take some time to run
+#####################################################
+k1=np.array([0.01,0.1,1.0,10.0,1.0e2])
 
+mars2=Mars_read(noceans=1.0,HoverC=0.55,redox_factor=k1[4])
+plot_profile(mars2)
 
+############################################################################
 plt.show()
