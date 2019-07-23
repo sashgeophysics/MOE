@@ -9,7 +9,11 @@ rc('font',**{'family':'serif','serif':['Palatino']})
 plt.rcParams.update({'font.size': 25})
 rc('text', usetex=True)
 rc('legend',numpoints=1)
-
+import matplotlib.patches as patches 
+from scipy.optimize import curve_fit
+def fit_func(x,m):
+    """Fitting function"""
+    return m*x
 
 class CO2:
     """This class contains the functions
@@ -152,6 +156,7 @@ class Mars(CO2,H2O,REE):
         self.area=144.4e12            # m^2 surface area of Mars
         self.radius=3.39e6            # m radius of Mars
         self.g=3.711                  # m/s^2, surface gravity of Mars
+        self.mass = 0.624e24          # kg mass of Mars, Carr, encyclopedia of SS
         self.rho=4287.0               # kg/m^3 average density of Mars
         self.Cp=1.0e3                 # J/kg/K heat capacity
         self.alpha=5.0e-5             # 1/K coefficient of thermal expansion
@@ -309,6 +314,23 @@ class Mars(CO2,H2O,REE):
         self.CREEMO[:,0]= self.all_REE_init_conc
         self.CREERM[:,0]= 0.0
         self.MREERM[:,0]= 0.0
+
+    def kg2GELm(self,M,rho_fluid=1.0e3):
+        """
+        This function converts mass of water in kg to
+        Global Equivalent Layer in m, height of a water
+        column covering the surface of Mars in meters. The
+        volume of a thin fluid shell of height h can be approximated
+        by the formula h = mass/area/rho_fluid
+        Input:
+        M          : mass of fluid envelop
+        rho_fluid  : density of fluid envelop
+        Output:
+        h          : Global Equivalent Layer (m)
+        """
+        h = M/self.area/rho_fluid
+        return(h)
+        
     def discard_zeros(self,ind):
         """This function resizes all arrays in the object to the value ind"""
         self.T=np.resize(self.T,ind)   
@@ -1020,10 +1042,14 @@ class Mars_read(REE):
         self.HoverC=HoverC
         self.redox_factor = redox_factor # ratio fCO2/fO2
         self.noceansH2O=noceans
+        self.H2OMASS=noceans*1.6e21
+        self.CO2overH2O=1.0/(HoverC*2.45)
+        self.CO2MASS=self.CO2overH2O*self.H2OMASS
         #########################
         f=self.output_filenames(const=Ftl_const)
         data=np.loadtxt(f[6],delimiter=',')
-        
+        self.area=144.4e12            # m^2 surface area of Mars
+        self.mass = 0.624e24          # kg mass of Mars, Carr, encyclopedia of SS
         self.tma_final   = data[0]
         self.PCO2_final  = data[1]
         self.CCO2RM_final= data[2]
@@ -1133,17 +1159,61 @@ class Mars_read(REE):
         """plots the thermal evolution of an object
         """
         self.load_evolution()
-        plt.figure(figsize=(12,16))
-        plt.subplot(3,1,1)
+        plt.figure(figsize=(12,10))
+        ax1=plt.subplot(3,1,1)
         plt.plot(self.tma,self.T,'firebrick',linewidth=4)
-        plt.ylabel(r'$T^\mathrm{o}$C',fontsize=30)
+        plt.ylabel(r'$T (^\mathrm{o}$C)',fontsize=30)
         
-        plt.subplot(3,1,2)
-        plt.plot(self.tma,self.MMO,'salmon',linewidth=4)
-        plt.plot(self.tma,self.MRM,'steelblue',linewidth=4)
-        plt.legend(['MO','RM'],fancybox=True,loc=4,framealpha=0.7)
-        plt.ylabel('Mass (kg)',fontsize=30)
-        plt.subplot(3,1,3)
+        GEL=self.kg2GELm(self.H2OMASS)/1000.0
+        plt.text(0.8,2200,'{:3.2f} GEL (km)'.format(GEL),fontsize=30)
+        plt.text(0.8,2000,'H:C ={:3.2f}'.format(self.HoverC),fontsize=30)
+        plt.text(0.8,1800,r'$K^\ast$ ={:3.2f}'.format(self.redox_factor),fontsize=30)
+        plt.text(0.03,1500,'(a)',fontsize=40,fontweight='bold')
+        ax1.set_yticks([1600,2000,2400])
+        ax1=plt.subplot(3,1,2)
+        plt.plot(self.tma,self.MMO/1.0e23,'salmon',linewidth=4)
+        plt.plot(self.tma,self.MRM/1.0e23,'steelblue',linewidth=4)
+        plt.legend(['MO','RM'],fancybox=True,loc=4,framealpha=0.5)
+        plt.text(0.03,1,'(b)',fontsize=40,fontweight='bold')
+        ax1.yaxis.set_ticks_position('right') 
+        ax1.yaxis.set_label_position('right') 
+        ax1.spines['right'].set_position(('outward', 0))
+        plt.ylabel(r'Mass ($10^{23}$ kg)',fontsize=30,labelpad=20)
+        ax1.set_yticks([2.0,4.0,6.0])
+        ax1=plt.subplot(3,1,3)
         plt.plot(self.tma,self.akm,'forestgreen',linewidth=4)
         plt.ylabel('RM radius (km)',fontsize=30)
         plt.xlabel('Time (Ma)',fontsize=30)
+        plt.text(0.03,300,'(c)',fontsize=40,fontweight='bold')
+        ax1.set_yticks([500,1000,1500])
+    def kg2GELm(self,M,rho_fluid=1.0e3):
+        """
+        This function converts mass of water in kg to
+        Global Equivalent Layer in m, height of a water
+        column covering the surface of Mars in meters. The
+        volume of a thin fluid shell of height h can be approximated
+        by the formula h = mass/area/rho_fluid
+        Input:
+        M          : mass of fluid envelop
+        rho_fluid  : density of fluid envelop
+        Output:
+        h          : Global Equivalent Layer (m)
+        """
+        h = M/self.area/rho_fluid
+        return(h)
+    def GELm2kg(self,h,rho_fluid=1.0e3):
+        """
+        This function converts mass of water in kg to
+        Global Equivalent Layer in m, height of a water
+        column covering the surface of Mars in meters. The
+        volume of a thin fluid shell of height h can be approximated
+        by the formula h = mass/area/rho_fluid
+        Input:
+        h          : Global Equivalent Layer (m)
+        rho_fluid  : density of fluid envelop
+        Output:
+        M          : mass of fluid envelop (kg)
+        """
+        M = h*self.area* rho_fluid
+        return(M)
+
