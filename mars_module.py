@@ -101,6 +101,35 @@ class REE:
                      CI_Nd, CI_Sm, CI_Zr, CI_Hf, CI_Eu,\
                      CI_Gd, CI_Tb,CI_Dy, CI_Y, CI_Er,\
                      CI_Tm, CI_Yb,  CI_Lu])
+    ## CI REE from Anders and Grevesse, 1989
+    CI_Rb_AG = 7.09e-6
+    CI_Ba_AG = 4.49e-6
+    CI_Th_AG = 0.0335e-6
+    CI_U_AG  = 0.009e-6
+    CI_Ta_AG = 0.0207e-6
+    CI_K_AG  = 3770.0e-6
+    CI_La_AG = 0.446e-6
+    CI_Ce_AG = 1.136e-6
+    CI_P_AG  = 1.04e-2
+    CI_Sr_AG = 23.5e-6
+    CI_Nd_AG = 0.8279e-6
+    CI_Sm_AG = 0.2582e-6
+    CI_Zr_AG = 11.4e-6
+    CI_Hf_AG = 0.154e-6
+    CI_Eu_AG = 0.0973e-6
+    CI_Gd_AG = 0.33e-6
+    CI_Tb_AG = 0.0603e-6
+    CI_Dy_AG = 0.3942e-6
+    CI_Y_AG  = 4.64e-6
+    CI_Er_AG = 0.2508e-6
+    CI_Tm_AG = 0.0378e-6
+    CI_Yb_AG = 0.2479e-6
+    CI_Lu_AG = 0.0367e-6
+    CI_REE_AG=np.array([CI_Rb_AG,CI_Ba_AG,CI_Th_AG,CI_U_AG,\
+                        CI_Ta_AG, CI_K_AG, CI_La_AG, CI_Ce_AG,\
+                        CI_P_AG,CI_Sr_AG,CI_Nd_AG,CI_Sm_AG,CI_Zr_AG,\
+                        CI_Hf_AG,CI_Eu_AG,CI_Gd_AG,CI_Tb_AG,CI_Dy_AG,
+                        CI_Y_AG,CI_Er_AG,CI_Tm_AG,CI_Yb_AG,CI_Lu_AG])
     # NWA 1068 from Barrat 2002
     NWA1068=1.0e-6*np.array([5.75,127.0,0.409,0.1,0.2,1327.6,2.25,5.38,0.0,67.0,\
                       3.82,1.49,62.14,1.58,0.552,2.14,0.414,2.8,17.19,1.63,0.0,1.37,0.198])
@@ -174,10 +203,13 @@ class Mars(CO2,H2O,REE):
         #Set initial temperature
         self.T_init=self.T_CMB-(self.radius-self.core)*self.gam+200.0
         #self.fit_coefficients=self.radius_temperature_analytical()
-        #a-T polynomial fit coefficients for 1870<T<2120 deg C
-        self.aT_fit_hi=[ -1.19014770e+00,   2.03249128e+03,   1.09391926e+06]
-        #a-T polynomial fit coefficient for 1400 < T <=1870 deg G
-        self.aT_fit_lo=[ -1.52094133e-02,   6.82235562e+01,  -1.03039120e+05,   5.42788842e+07]
+        #a-T polynomial fit coefficients for 1820<T<2070 deg C
+        self.aT_fit_hi=[ -1.46402889e+00,   2.96827884e+03,   1.79228532e+05]
+        #[ -1.19014770e+00,   2.03249128e+03,   1.09391926e+06]
+        #a-T polynomial fit coefficient for 1350 < T <=1820 deg G
+        self.aT_fit_lo= [ -1.52094133e-02,   6.59633338e+01,  \
+                          -9.63920910e+04,   4.93403358e+07]
+        #[ -1.52094133e-02,   6.82235562e+01,  -1.03039120e+05,  5.42788842e+07]
         self.dadT=0.0                 #da/dT in m/K
         
         #######Volatile masses in terms of oceans
@@ -377,7 +409,7 @@ class Mars(CO2,H2O,REE):
         Xliq=0.3
         r=r1*1.0e-3
         T = -1.963e-10*r**4+1.694e-6*r**3-0.00533*r*r+6.884*r\
-            -830.0-(6/(0.2*Xliq+0.225))
+            -830.0-(6/(0.2*Xliq+0.025))
         return(T)
     def liquidus(self,r):
         """This function outlines
@@ -426,9 +458,9 @@ class Mars(CO2,H2O,REE):
         #p=self.fit_coefficients
         p_hi=self.aT_fit_hi
         p_lo=self.aT_fit_lo
-        if T<1400.0 or T>2120.0:
+        if T<1350.0 or T>2070.0:
             dadT=0.0
-        elif T>1400.0 and T<1870.0:
+        elif T>1350.0 and T<1820.0:
              #a_low=p_low[0]*T_low**3+p_low[1]*T_low**2+p_low[2]*T_low+p_low[3]
             dadT=3.0*p_lo[0]*T**2+2.0*p_lo[1]*T+p_lo[2]
         else:
@@ -726,6 +758,8 @@ class Mars(CO2,H2O,REE):
         vars6  = 'CREEMO'
         vars7  = '_final'
         vars8  = 'CREE'
+        vars_temp1='80pct'
+        vars_temp2='90pct'
         #File extension
         ext    = '.csv'
         f1 = prefix+vars1+ext
@@ -736,16 +770,18 @@ class Mars(CO2,H2O,REE):
         f6 = prefix+vars6+ext
         f7 = prefix+vars7+ext
         f8 = prefix+vars8+ext
-        return(f1,f2,f3,f4,f5,f6,f7,f8)
+        f9 = prefix+vars5+vars_temp1+ext
+        f10= prefix+vars6+vars_temp2+ext
+        return(f1,f2,f3,f4,f5,f6,f7,f8,f9,f10)
     def create_output(self,const=False):
         """This function writes the output
         of simulations into text files"""
         if const == False:
-            fname1,fname2,fname3,fname4,fname5,fname6,fname7,fname8\
-            =self.output_filenames()
+            fname1,fname2,fname3,fname4,fname5,fname6,fname7,fname8,\
+                fname9,fname10=self.output_filenames()
         else:
-            fname1,fname2,fname3,fname4,fname5,fname6,fname7,fname8\
-            =self.output_filenames(const=True)
+            fname1,fname2,fname3,fname4,fname5,fname6,fname7,fname8,\
+            fname9,fname10=self.output_filenames(const=True)
             
         
         # Text for headers in the csv file
@@ -757,6 +793,9 @@ class Mars(CO2,H2O,REE):
         txt6  = '#Evolution of REE concentration in MO in the order : Rb,Ba,Th,U,Ta,K,La,Ce,P,Sr,Nd,Sm,Zr,Hf,Eu,Gd,Tb,Dy,Y,Er,Tm,Yb,Lu'
         txt7  = '# Time (Ma), CO2 pressure in PA (Pa), CO2 conc. in RM, CO2 conc. in MO, H2O pressure in PA (Pa), H2O conc. in RM, H2O conc. in MO'
         txt8  = '#Final REE concentration in MO(first col) and RM(second col) in the order : Rb,Ba,Th,U,Ta,K,La,Ce,P,Sr,Nd,Sm,Zr,Hf,Eu,Gd,Tb,Dy,Y,Er,Tm,Yb,Lu'
+        txt9  = '#80% crystallization REE concentration in MO(first col) and RM(second col) in the order : Rb,Ba,Th,U,Ta,K,La,Ce,P,Sr,Nd,Sm,Zr,Hf,Eu,Gd,Tb,Dy,Y,Er,Tm,Yb,Lu'
+        txt10= '#90% crystallization REE concentration in MO(first col) and RM(second col) in the order : Rb,Ba,Th,U,Ta,K,La,Ce,P,Sr,Nd,Sm,Zr,Hf,Eu,Gd,Tb,Dy,Y,Er,Tm,Yb,Lu'
+        
         temp1=np.array([self.tma,self.T,self.akm,self.heatflux,self.MMO,\
                         self.MRM,self.Ftl])
         np.savetxt(fname1,temp1.T,delimiter=",",header=txt1)
@@ -788,6 +827,35 @@ class Mars(CO2,H2O,REE):
         temp8[:,0]=self.CREEMO[:,n-1]
         temp8[:,1]=self.CREERM[:,n-1]
         np.savetxt(fname8,temp8,delimiter=",",header=txt8)
+
+        temp9=np.zeros((23,2))
+        temp9[:,0]=self.CREE_MO80
+        temp9[:,1]=self.CREE_RM80
+        np.savetxt(fname9,temp9,delimiter=",",header=txt9)
+
+        temp10=np.zeros((23,2))
+        temp10[:,0]=self.CREE_MO90
+        temp10[:,1]=self.CREE_RM90
+        np.savetxt(fname10,temp10,delimiter=",",header=txt10)
+
+    def write_all_REE(self,const=False):
+        """Writes REE concentrations for all time steps"""
+        if const == False:
+            fname1,fname2,fname3,fname4,fname5,fname6,fname7,fname8\
+            =self.output_filenames()
+        else:
+            fname1,fname2,fname3,fname4,fname5,fname6,fname7,fname8\
+            =self.output_filenames(const=True)
+    
+        txt5  = '# Evolution of  REE concentration in RM in the order :\
+        Rb,Ba,Th,U,Ta,K,La,Ce,P,Sr,Nd,Sm,Zr,Hf,Eu,Gd,Tb,Dy,Y,Er,Tm,Yb,Lu'
+        txt6  = '#Evolution of REE concentration in MO in the order : \
+        Rb,Ba,Th,U,Ta,K,La,Ce,P,Sr,Nd,Sm,Zr,Hf,Eu,Gd,Tb,Dy,Y,Er,Tm,Yb,Lu'
+        temp5=np.array([self.CREERM])
+        np.savetxt(fname5,temp5.T,delimiter=",",header=txt5)
+        temp6=np.array([self.CREEMO])
+        np.savetxt(fname6,temp6.T,delimiter=",",header=txt6) 
+        
     def load_object_from_file(self):
        """This function loads data from simulated values.
        Call this only for visualization
@@ -926,8 +994,18 @@ class Mars(CO2,H2O,REE):
             # check if solidified, then exit
             #####################################################
             percent_solid=100.0*self.a[ii]/(self.radius-self.core)
-            #print '% MO solidified: ', percent_solid
-            
+            #print '% MO solidified: ', percent_solid            
+            # Create a special object for creating output
+            # of REEs at 80% and 90% crystallization
+            #if percent_solid >80.0 and percent_solid<81.0:
+            #    self.CREE_RM80=self.CREERM[:,ii]
+            #    self.CREE_MO80=self.CREEMO[:,ii]
+               
+            #Only uncomment the following for special cases    
+            #if percent_solid>90.0 and percent_solid<91.0:
+            #    self.CREE_RM90 =self.CREERM[:,ii]
+            #    self.CREE_MO90=self.CREEMO[:,ii]
+
             if percent_solid > 99.5:
                 # variables for print out
                 temp1=self.CH2ORM[ii]*1.0e6
@@ -936,7 +1014,12 @@ class Mars(CO2,H2O,REE):
                 temp4= self.PH2O[ii]*1.0e-5
                 temp5=self.t[ii]*1.0e-6/365/24/3600
                 break
-                            
+        print '80% shape and values'
+        print np.shape(self.CREE_RM80)
+        print self.CREE_RM80
+        print '90% shape and values'
+        print np.shape(self.CREE_RM90)
+        print self.CREE_RM90
         self.discard_zeros(ii-1)    
         self.tma=self.t*1.0e-6/365/24/3600 #Time in Ma
         self.akm=self.a*1.0e-3
@@ -992,7 +1075,7 @@ class Mars(CO2,H2O,REE):
             
         for ii in range (0,99):
             # Fit the radius only for nonzero values
-            if T[ii]>1400.0 and T[ii] < 1870.0:
+            if T[ii]>1350.0 and T[ii] < 1820.0:
                 index[ii]=True
             else:
                 index[ii]=False
@@ -1004,7 +1087,7 @@ class Mars(CO2,H2O,REE):
         index=np.zeros(100)
         for ii in range (0,99):
             # Fit the radius only for nonzero values
-            if T[ii]>1870.0 and T[ii] < 2120.0:
+            if T[ii]>1820.0 and T[ii] < 2080.0:
                 index[ii]=True
             else:
                 index[ii]=False
@@ -1016,29 +1099,31 @@ class Mars(CO2,H2O,REE):
         
         if plot==True:
             temp_label=[1400,1800,2200,2600]
-            plt.plot(T,a*1.0e-3,'s',color='skyblue',markersize=10,alpha=0.7)
-            T_high=np.linspace(1871.0,2120.0)
-            T_low=np.linspace(1400.0,1866.0)
+            plt.plot(T,a*1.0e-3,'s',color='skyblue',markersize=20,alpha=0.7)
+            T_high=np.linspace(1821.0,2080.0)
+            T_low=np.linspace(1350.0,1819.0)
 
             a_high=p_high[0]*T_high**2+p_high[1]*T_high+p_high[2]
             a_low=p_low[0]*T_low**3+p_low[1]*T_low**2+p_low[2]*T_low+p_low[3]
             plt.plot(T_high,a_high/1.0e3,'-',color='steelblue',lw=4)
-            plt.legend(['Numerical','Analytical'],fancybox=True,framealpha=0.7)
-            plt.plot(2100,146.0,'o',color='tomato',markersize=20,alpha=0.7)
-            plt.plot(1600,1776.0,'o',color='tomato',markersize=20,alpha=0.7)
+            plt.legend(['Numerical','Fit'],fancybox=True,framealpha=0.7)
+            plt.plot(2050,146.0,'o',color='tomato',markersize=20,alpha=0.7)
+            plt.plot(1550,1776.0,'o',color='tomato',markersize=20,alpha=0.7)
             plt.plot(T_low,a_low/1.0e3,'-',color='steelblue',lw=4)
             plt.xticks(temp_label)
             plt.ylim(0.0,2000.0)
             plt.xlabel(r'Potential Temperature ($^\mathrm{o}$C)',fontsize=30)
             plt.ylabel(r'Residual mantle radius (km)',fontsize=30)
-        
+            print 'Coefficients between 1820 and 2080',p_high
+            print 'Coefficients between 1350 and 1820',p_low
+            
         
 class Mars_read(REE):
     """
     A class for loading some data for a Mars
     object
     """
-    def __init__(self,noceans=1.0,HoverC=0.4,redox_factor=1.0,Ftl_const=False):
+    def __init__(self,noceans=1.0,HoverC=0.4,redox_factor=1.0,Ftl_const=False,Fcl=False):
         self.HoverC=HoverC
         self.redox_factor = redox_factor # ratio fCO2/fO2
         self.noceansH2O=noceans
@@ -1061,6 +1146,15 @@ class Mars_read(REE):
         data2=np.loadtxt(f[7],delimiter=',')
         self.CREEMO_final=data2[:,0]
         self.CREERM_final=data2[:,1]
+        ####################################
+        # This is only for special cases
+        if Fcl == True:            
+            data3=np.loadtxt(f[8],delimiter=',')
+            self.CREEMO_80=data3[:,0]
+            self.CREERM_80=data3[:,1]        
+            data4=np.loadtxt(f[9],delimiter=',')
+            self.CREEMO_90=data4[:,0]
+            self.CREERM_90=data4[:,1]
         ###############################################
         # Initial Martian crust and mantle abundance
         # From Lodder and Fegley, 1997, Table VI
@@ -1116,6 +1210,8 @@ class Mars_read(REE):
         vars6  = 'CREEMO'
         vars7  = '_final'
         vars8  = 'CREE'
+        vars_temp1='80pct'
+        vars_temp2='90pct'
         #File extension
         ext    = '.csv'
         f1 = prefix+vars1+ext
@@ -1126,7 +1222,10 @@ class Mars_read(REE):
         f6 = prefix+vars6+ext
         f7 = prefix+vars7+ext
         f8 = prefix+vars8+ext
-        return(f1,f2,f3,f4,f5,f6,f7,f8)
+        f9 = prefix+vars5+vars_temp1+ext
+        f10= prefix+vars6+vars_temp2+ext
+        
+        return(f1,f2,f3,f4,f5,f6,f7,f8,f9,f10)
     
     def load_evolution(self,Ftl_const=False):
         """Loads data from files"""

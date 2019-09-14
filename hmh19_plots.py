@@ -15,7 +15,7 @@ H2O_mass=n_oceans*1.6e21
 ########################################################################
 ## Plot show solidus and adiabat
 ########################################################################
-solidus_plot()
+#solidus_plot()
 ########################################################################
 # Plot: Show thermal evolution related variables
 # Uncomment the line below for plot, may take some time
@@ -29,7 +29,6 @@ solidus_plot()
 # Uncomment the line below for plot, may take some time
 ########################################################################
 #mars1=Mars_read(noceans=1.0,HoverC=0.55,redox_factor=redox_fac[0])
-#print '1km GEL to kg',mars1.GELm2kg(1.0e3)
 #mars2=Mars_read(noceans=1.0,HoverC=0.55,redox_factor=redox_fac[4])
 #compare_evolution(mars1,mars2)
 ########################################################################
@@ -63,4 +62,11 @@ solidus_plot()
 #print 'water mass, GEL (km)', mars2.H2OMASS, mars2.kg2GELm(mars2.H2OMASS)/1.0e3
 #plot_profile(mars2)
 ############################################################################
+
+########################################################
+# Plot several time steps in REE plots
+################################################
+mars=Mars_read(noceans=0.8,HoverC=0.55,redox_factor=0.01, Fcl=True)
+print 'Water in GEL m in the bulk',mars.kg2GELm(mars.H2OMASS)
+REE_plots(mars)
 plt.show()
