@@ -529,7 +529,7 @@ def redox_plots(k1,n1=0.8,n2=0.4,H_over_C=0.55):
     print " Mantle carbon (ppm) min, max:",np.min(RM_CO2_a*1.0e6),np.max(RM_CO2_a*1.0e6)
     
 
-def REE_plots(mars1):
+def REE_plots(mars1,mars_const):
     """"""
     
     ##############################################
@@ -545,44 +545,49 @@ def REE_plots(mars1):
 
     plt.figure(figsize=(16,18))
 
-    plt.semilogy(REE,(mars1.CREEMO_final/mars1.CI_REE),'s',color='salmon',markersize=20)
+    #plt.semilogy(REE,(mars1.BD_TL995/mars1.CI_REE),'s',color='salmon',MArkerFacecolor='None',markersize=20)
+    plt.semilogy(REE,(mars1.CREEMO_final/mars1.CI_REE),'s',color='darkorange',markersize=20)
     #    plt.semilogy(REE,(mars1.CREEMO_80/mars1.CI_REE),'d',color='steelblue',markersize=20)
     plt.semilogy(REE,(mars1.NWA1068/mars1.CI_REE),'o',color='moccasin',markersize=20)
     plt.semilogy(REE,(mars1.shergotty/mars1.CI_REE),'o',color='cornflowerblue',markersize=20)
     plt.semilogy(REE,(mars1.zagami/mars1.CI_REE),'o',color='#D4B1B1',markersize=20)
-    plt.semilogy(REE,(mars1.all_REE_init_conc/mars1.CI_REE),"p",color='mediumpurple',markersize=30)
-    plt.semilogy(REE,(mars1.CREERM_80/mars1.CI_REE),'D',color='steelblue',markersize=20)
+    plt.semilogy(REE,(mars1.all_REE_init_conc/mars1.CI_REE),"p",color='firebrick',markersize=30)
+    plt.semilogy(REE,(mars1.CREERM_80/mars1.CI_REE),'D',color='darkorange',markersize=20)
     #    plt.semilogy(REE,(mars1.CREERM_final/mars1.CI_REE),'o',color='darkgreen',markersize=20)
+    plt.semilogy(REE,(mars1.BD_PCS4/mars1.CI_REE),'o',MarkerFacecolor='forestgreen',markeredgecolor='forestgreen',lw=2,markersize=20)
     
-    
-    plt.legend([ r'MO after 99.5$\%$ crystallization', 'NWA1068','Shergotty','Zagami','Initial abundance',r'RM after 80$\%$ crystallization'],loc=4,fancybox=True,framealpha=0.7)
+    plt.legend([ r'MO after 99.5$\%$ crystallization', 'NWA1068','Shergotty','Zagami','Initial abundance',r'RM after 80$\%$ crystallization', 'Borg and Draper (2003)'],loc=4,fancybox=True,framealpha=0.7)
     plt.ylabel('Concentration/Chondrite',fontsize=30)
 
-    curve1=(0.9*mars1.CREERM_80+0.1*mars1.CREEMO_final)/mars1.CI_REE
-    curve2=(0.6*mars1.CREERM_80+0.4*mars1.CREEMO_final)/mars1.CI_REE
-    plt.plot(REE,curve1,'-',color='steelblue',lw=6)
-    plt.plot(REE,curve2,'-',color='steelblue',lw=6)
+    curve1=(mars_const.CREERM_80/mars_const.CI_REE)
+    curve2=(mars_const.CREERM_90/mars_const.CI_REE)
+    plt.plot(REE,curve1,'-',color='forestgreen',lw=6)
+    plt.plot(REE,curve2,'-',color='forestgreen',lw=6)
     ax=plt.gca()
-    ax.fill_between(REE,curve1,curve2,color='steelblue',alpha=0.3)
+    ax.fill_between(REE,curve1,curve2,color='forestgreen',alpha=0.3)
     
-    plt.semilogy(REE,(mars1.CREEMO_final/mars1.CI_REE),color='salmon')
+    plt.semilogy(REE,(mars1.CREEMO_final/mars1.CI_REE),color='darkorange')
     #plt.semilogy(REE,(mars1.CREERM_final/mars1.CI_REE),color='darkgreen')
     plt.semilogy(REE,(mars1.NWA1068/mars1.CI_REE),'-',color='#005668')
     plt.semilogy(REE,(mars1.shergotty/mars1.CI_REE),'-',color='darkgreen')
     plt.semilogy(REE,(mars1.zagami/mars1.CI_REE),'-',color='darkgreen')
     #plt.semilogy(REE,(mars1.CREEMO_80/mars1.CI_REE),'--',color='steelblue')
-    plt.semilogy(REE,(mars1.all_REE_init_conc/mars1.CI_REE),'-',color='mediumpurple')
-    plt.semilogy(REE,(mars1.CREERM_80/mars1.CI_REE),'-',color='steelblue')
-    plt.text(10,3.8,r'90\% RM + 10\% MO',fontsize=30,color='steelblue',rotation=-5)
-    plt.text(10,19,r'60\% RM + 40\% MO',fontsize=30,color='steelblue',rotation=-5)
+    plt.semilogy(REE,(mars1.all_REE_init_conc/mars1.CI_REE),'-',color='firebrick')
+    plt.semilogy(REE,(mars1.CREERM_80/mars1.CI_REE),'-',color='darkorange')
+    plt.semilogy(REE,(mars1.BD_PCS4/mars1.CI_REE),'-',color='forestgreen')
+    plt.text(14,0.4,r'Constant $F_{tl}$ RM 80 - 90 \%',fontsize=30,color='forestgreen',rotation=14)
+    #plt.text(10,19,r'60\% RM + 40\% MO',fontsize=30,color='steelblue',rotation=-5)
     ax=plt.gca()
     plt.xticks(REE,REE_label,rotation='vertical',fontsize=30)
 
-    arrow1 = patches.FancyArrowPatch((23.2, 1.8), (23.2, 1.1), color='steelblue',mutation_scale=100)
-    arrow2 = patches.FancyArrowPatch((23.2, 1.9), (23.2, 22), color='salmon',mutation_scale=100)
+    arrow1 = patches.FancyArrowPatch((23.2, 1.8), (23.2, 1.1), color='darkorange',mutation_scale=100)
+    arrow2 = patches.FancyArrowPatch((23.2, 1.9), (23.2, 22), color='darkorange',mutation_scale=100)
     ax.add_patch(arrow1)
     ax.add_patch(arrow2)
-
+    # Create an output for data table
+    data_out=np.array([REE_label,mars1.CREEMO_final*1.0e6,mars1.CREERM_80*1.0e6,mars_const.CREERM_80*1.0e6,mars1.BD_PCS4*1.0e6]).T
+    print np.shape(data_out)
+    np.savetxt('Trace_elements.csv',data_out,fmt='%s',delimiter=',',header=str(['Elements','MO after 99.5%','RM after 80%','RM constant Ftl after 80%','Borg and Draper PCS4']))
 def solidus_plot():
     """Plots the solidus and adiabat"""
     #########################################################

@@ -67,6 +67,7 @@ H2O_mass=n_oceans*1.6e21
 # Plot several time steps in REE plots
 ################################################
 mars=Mars_read(noceans=0.8,HoverC=0.55,redox_factor=0.01, Fcl=True)
+mars_const=Mars_read(noceans=0.8,HoverC=0.55,redox_factor=0.01, Ftl_const=True,Fcl=True)
 print 'Water in GEL m in the bulk',mars.kg2GELm(mars.H2OMASS)
-REE_plots(mars)
+REE_plots(mars,mars_const)
 plt.show()
