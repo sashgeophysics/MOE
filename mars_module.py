@@ -140,6 +140,12 @@ class REE:
                                 0.43,1.64,0.0,2.16,0.0,1.33,0.0,1.19,0.176])
     zagami =1.0e-6*np.array([5.69,25.3,0.0,0.0,0.0,1243.0,1.6,3.75,0.0,45.9,2.89,1.17,0.0,0.0,\
                              0.476,0.0,0.0,2.66,0.0,1.6,0.0,1.38,0.201])
+    # Trace element concentration in trapped liqiuid (TL) and solid cumulates after 60-90%
+    # crystallization PCS4, from Borg and Draper, 2003, table 6
+    BD_TL995=1.0e-6*np.array([479.0,1687.0,17.9, 4.93, 7.64, 125682.0,107.0,289.0,201448.0,2799.0,\
+                              185.0,48.5,994.0,27.3,10.7,35.8,6.54,39.2,248.0,28.0,4.63,25.5,4.63 ])
+    BD_PCS4 =1.0e-6*np.array([0.044, 0.23, 0.0016, 0.0009, 0.0060, 11.1, 0.055, 0.19,126.0, 4.15, 0.24,\
+                              0.12, 4.47, 0.12, 0.063, 0.28, 0.049, 0.33, 1.90, 0.21,0.033,0.184, 0.034])
         ##########################################
 class Earth(CO2,H2O):
     """This class contains functions for the Earth"""
@@ -1000,12 +1006,16 @@ class Mars(CO2,H2O,REE):
             #if percent_solid >80.0 and percent_solid<81.0:
             #    self.CREE_RM80=self.CREERM[:,ii]
             #    self.CREE_MO80=self.CREEMO[:,ii]
-               
+            #    print '80% shape and values'
+            #    print np.shape(self.CREE_RM80)
+            #    print self.CREE_RM80
             #Only uncomment the following for special cases    
             #if percent_solid>90.0 and percent_solid<91.0:
             #    self.CREE_RM90 =self.CREERM[:,ii]
             #    self.CREE_MO90=self.CREEMO[:,ii]
-
+            #    print '90% shape and values'
+            #    print np.shape(self.CREE_RM90)
+            #    print self.CREE_RM90
             if percent_solid > 99.5:
                 # variables for print out
                 temp1=self.CH2ORM[ii]*1.0e6
@@ -1014,12 +1024,8 @@ class Mars(CO2,H2O,REE):
                 temp4= self.PH2O[ii]*1.0e-5
                 temp5=self.t[ii]*1.0e-6/365/24/3600
                 break
-        print '80% shape and values'
-        print np.shape(self.CREE_RM80)
-        print self.CREE_RM80
-        print '90% shape and values'
-        print np.shape(self.CREE_RM90)
-        print self.CREE_RM90
+        
+        
         self.discard_zeros(ii-1)    
         self.tma=self.t*1.0e-6/365/24/3600 #Time in Ma
         self.akm=self.a*1.0e-3
