@@ -937,7 +937,11 @@ class Mars(CO2,H2O,REE):
             self.heatflux[ii]=self.heat_flux(self.T[ii],e)
             #calculate trapped melt fraction
             if const_Ftl == False:
+
                 self.Ftl[ii]=self.phic*self.tau*dTdt[ii]/self.deltaT
+
+                self.Ftl[ii]=self.phic*self.tau*dTdt/self.deltaT
+
             else:
                 self.Ftl[ii]=0.01
                 

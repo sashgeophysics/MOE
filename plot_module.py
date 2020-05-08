@@ -339,7 +339,11 @@ def Final_concentrations(n_oceans,H_over_C=0.55,redox_fac=1.0,redox_fac2=1.0e2):
     print 'Initial water content in GEL(m), Lunine:low, hi',intial_GEL_lunine_low,initial_GEL_lunine_hi
     print 'Initial water content in  kg, Lunine:, low, hi:',initial_water_lunine_low,initial_water_lunine_hi
     print 'Initial CO2 content in  kg, Lunine:C=0.55 (H):, low, hi:',initial_CO2_lunine_low,initial_CO2_lunine_hi
+
     print 'Carbon concentration in Bulk Mars Lodders anf Fegley (ppm):',2960
+
+    print 'Carbon concentration in Bulk Mars Lodders anf Fegley (ppmw):',2960
+
     print 'Carbon and CO2 masses from Lodders and Fegley (kg):',mars1.mass*2960.0e-6,mars1.mass*2960.0e-6*(16.0*2+12)/12
     ###############
     plt.figure(figsize=(10,16))
@@ -348,7 +352,13 @@ def Final_concentrations(n_oceans,H_over_C=0.55,redox_fac=1.0,redox_fac2=1.0e2):
     ax1=plt.subplot(2,1,1)
     plt.semilogy(CO2_mass,final_CO2*1.0e6,'o',markersize=20,color='powderblue')
     plt.semilogy(CO2_mass,final_CO2_a*1.0e6,'s',markersize=20,color='dimgray')
+
     plt.ylabel(r'Mantle $\mathrm{CO_2}$ (ppm)')
+
+    plt.semilogy(CO2_mass,final_CO2*1.0e6,'-',lw=3,color='powderblue')
+    plt.semilogy(CO2_mass,final_CO2_a*1.0e6,'-',lw=3,color='dimgray')
+    plt.ylabel(r'Mantle $\mathrm{CO_2}$ (ppmw)')
+
     plt.text(1.0e21,0.2,'(a)',fontweight='bold',fontsize=50)
     rect1=patches.Rectangle((0.7e20,0.01),2.3e20, 1000, color='steelblue',alpha=0.7)
 
@@ -364,12 +374,20 @@ def Final_concentrations(n_oceans,H_over_C=0.55,redox_fac=1.0,redox_fac2=1.0e2):
     
     plt.plot(CO2_mass,final_time,'o',markersize=20,color='powderblue')
     plt.plot(CO2_mass,final_time_a,'s',markersize=20,color='dimgray')
+
+
+    plt.legend([r'$K^\ast = ${:.2f}'.format(redox_fac), r'$K^\ast = ${:.2f}'.format(redox_fac2)],fancybox=True,loc=2,framealpha=0.7)
+    plt.plot(CO2_mass,final_time,'-',lw=3,color='powderblue')
+    plt.plot(CO2_mass,final_time_a,'-',lw=3,color='dimgray')
+
     rect3=patches.Rectangle((0.7e20,0.01),2.3e20, 1.6, color='steelblue',alpha=0.7)
 
     rect4=patches.Rectangle((4.63e20,0.01),2.2e20, 1.6, color='steelblue',alpha=0.4)
     ax2.add_patch(rect3)
     ax2.add_patch(rect4)
+
     plt.legend([r'$K^\ast = ${:.2f}'.format(redox_fac), r'$K^\ast = ${:.2f}'.format(redox_fac2)],fancybox=True,loc=2,framealpha=0.7)
+
 
     plt.ylabel('Time (Ma)')
 
@@ -386,7 +404,12 @@ def Final_concentrations(n_oceans,H_over_C=0.55,redox_fac=1.0,redox_fac2=1.0e2):
     plt.plot(H2O_mass,final_water*1.0e6,'o',markersize=20,color='darkgreen')
     plt.plot(H2O_mass,final_water_const*1.0e6,'o',markersize=20,markeredgecolor='darkorange',markerfacecolor='none',markeredgewidth=3)
 
+
     plt.ylabel(r'Mantle $\mathrm{H_2O}$ (ppm)')
+
+    plt.plot(H2O_mass,final_water_const*1.0e6,'-',lw=3,color='darkorange')
+    plt.ylabel(r'Mantle $\mathrm{H_2O}$ (ppmw)')
+
     
     plt.xlabel(r'Initial bulk $\mathrm{H_2O}$ (kg)')
 
@@ -409,7 +432,11 @@ def Final_concentrations(n_oceans,H_over_C=0.55,redox_fac=1.0,redox_fac2=1.0e2):
     slope_mass, pcov = curve_fit(fit_func,H2O_mass.ravel(),temp.ravel(),p0=None)
     y_fit=fit_func(H2O_mass,slope_mass)
     plt.plot(H2O_mass,y_fit,color='darkgreen',lw=3)
+
     plt.text(0.65e21,1400,r"H$_2$O(ppm) = {0} $h$ (GEL m)".format(slope_GEL_float),rotation=35,color='darkgreen')
+
+    
+
     
     GELs=np.linspace(np.min(mGEL),np.max(mGEL),4)
     newlabels=GELs.astype(int)
@@ -427,10 +454,13 @@ def Final_concentrations(n_oceans,H_over_C=0.55,redox_fac=1.0,redox_fac2=1.0e2):
     ax3=plt.subplot(2,1,2)
     plt.semilogy(CO2_mass,final_CO2*1.0e6,'o',markersize=20,color='darkgreen')
     plt.semilogy(CO2_mass,final_CO2_const*1.0e6,'o',markersize=20,markeredgecolor='darkorange', markerfacecolor='none',markeredgewidth=3)
-    plt.ylabel(r'Mantle $\mathrm{CO_2}$ (ppm)')
+
+    plt.ylabel(r'Mantle $\mathrm{CO_2}$ (ppmw)')
     #plt.xlim(0.0,3.5)
     plt.xlabel(r'Initial $\mathrm{CO_2}$ (kg)')
     plt.legend(['Dynamic $F_{tl}$',r'Constant $F_{tl}$'],loc=4,fancybox=2,framealpha=0.7)
+    plt.semilogy(CO2_mass,final_CO2*1.0e6,'-',lw=3,color='darkgreen')
+    plt.semilogy(CO2_mass,final_CO2_const*1.0e6,'-',lw=3,color='darkorange')
     plt.text(0.08e21,30,'(b)',fontweight='bold',fontsize=50)
     rect3=patches.Rectangle((0.7e20,0.01),2.3e20, 100, color='steelblue',alpha=0.7)
 
@@ -485,12 +515,22 @@ def redox_plots(k1,n1=0.8,n2=0.4,H_over_C=0.55):
     plt.subplot(3,1,1)
     plt.semilogx(k1,freezing_time,'s',markersize=25,color = 'indianred')
     plt.semilogx(k1,freezing_time_a,'o',markersize=25,color = 'steelblue')
+
+
+    plt.semilogx(k1,freezing_time,'-',lw=3,color = 'indianred')
+    plt.semilogx(k1,freezing_time_a,'-',lw=3,color = 'steelblue')
+
     plt.ylabel('Freezing Time (Ma)')
     plt.yticks([0.1,0.3,0.5,0.7,0.9,1.1])
     plt.text(2000,1,'(a)',fontweight='bold',fontsize=40)
     ax1=plt.subplot(3,1,2)
     plt.semilogx(k1,CO2_pressure/1.0e5,'s',markersize=25,color = 'indianred')
     plt.semilogx(k1,CO2_pressure_a/1.0e5,'o',markersize=25,color = 'steelblue')
+
+
+    plt.semilogx(k1,CO2_pressure/1.0e5,'-',lw=3,color = 'indianred')
+    plt.semilogx(k1,CO2_pressure_a/1.0e5,'-',lw=3,color = 'steelblue')
+
     yticks_bar=[50,100,150,200,250]
     plt.yticks([50,100,150,200,250])
     plt.ylabel(r"${P_{CO2}}$ (bar)",fontsize=30)
@@ -510,23 +550,41 @@ def redox_plots(k1,n1=0.8,n2=0.4,H_over_C=0.55):
     plt.subplot(3,1,3)
     plt.semilogx(k1,RM_CO2*1.0e6,'s',markersize=25,color = 'indianred')
     plt.semilogx(k1,RM_CO2_a*1.0e6,'o',markersize=25,color = 'steelblue')
+
     plt.yticks([200,400,600,800,1000,1200])
     #plt.xlim(0.001,1000.0)
     #plt.ylim(0.0,1000.0)
     plt.legend(['Bulk CO$_2$ (kg) %.2E'%CO2_mass,'%.2E'%CO2_mass_a],fontsize=25,fancybox=True,framealpha=0.7,loc=2)
     plt.ylabel(r'Mantle CO$_2$ (ppm)')
+
+    plt.legend(['Bulk CO$_2$ (kg) %.2E'%CO2_mass,'%.2E'%CO2_mass_a],fontsize=25,fancybox=True,framealpha=0.7,loc=2)
+    plt.semilogx(k1,RM_CO2*1.0e6,'-',lw=3,color = 'indianred')
+    plt.semilogx(k1,RM_CO2_a*1.0e6,'-',lw=3,color = 'steelblue')
+    plt.yticks([200,400,600,800,1000,1200])
+    #plt.xlim(0.001,1000.0)
+    #plt.ylim(0.0,1000.0)
+    
+    plt.ylabel(r'Mantle CO$_2$ (ppmw)')
+
     plt.xlabel(r'$K^\ast$')
     plt.text(2000,100,'(c)',fontweight='bold',fontsize=40)
 
     print "Case 1: carbon mass,noceans of water,:",CO2_mass,n1
     print " Freezing time (Ma) min, max:",np.min(freezing_time),np.max(freezing_time)
     print " CO2 pressure (bar) min, max:",np.min(CO2_pressure/1.0e5),np.max(CO2_pressure/1.0e5)
-    print " Mantle carbon (ppm) min, max:",np.min(RM_CO2*1.0e6),np.max(RM_CO2*1.0e6)
+
+ 
+    print " Mantle carbon (ppmw) min, max:",np.min(RM_CO2*1.0e6),np.max(RM_CO2*1.0e6)
+
 
     print "Case 2: carbon mass,noceans of water,:",CO2_mass_a,n2
     print " Freezing time (Ma) min, max:",np.min(freezing_time_a),np.max(freezing_time_a)
     print " CO2 pressure (bar) min, max:",np.min(CO2_pressure_a/1.0e5),np.max(CO2_pressure_a/1.0e5)
+
     print " Mantle carbon (ppm) min, max:",np.min(RM_CO2_a*1.0e6),np.max(RM_CO2_a*1.0e6)
+
+    print " Mantle carbon (ppmw) min, max:",np.min(RM_CO2_a*1.0e6),np.max(RM_CO2_a*1.0e6)
+
     
 
 def REE_plots(mars1,mars_const):
@@ -543,24 +601,43 @@ def REE_plots(mars1,mars_const):
     
         REE_label=['Rb', 'Ba', 'Th', 'U','Ta', 'K', 'La', 'Ce' ,'P' , 'Sr' , 'Nd' , 'Sm' , 'Zr' ,  'Hf' , 'Eu' ,'Gd' ,  'Tb' ,  'Dy' ,  'Y' ,  'Er' ,   'Tm' ,  'Yb' ,   'Lu']
 
+
     plt.figure(figsize=(16,18))
 
     #plt.semilogy(REE,(mars1.BD_TL995/mars1.CI_REE),'s',color='salmon',MArkerFacecolor='None',markersize=20)
     plt.semilogy(REE,(mars1.CREEMO_final/mars1.CI_REE),'s',color='darkorange',markersize=20)
     #    plt.semilogy(REE,(mars1.CREEMO_80/mars1.CI_REE),'d',color='steelblue',markersize=20)
+
+    plt.figure(figsize=(16,20))
+
+    plt.semilogy(REE,(mars1.CREEMO_final/mars1.CI_REE),'s',color='forestgreen',markersize=30)
+    
+
     plt.semilogy(REE,(mars1.NWA1068/mars1.CI_REE),'o',color='moccasin',markersize=20)
     plt.semilogy(REE,(mars1.shergotty/mars1.CI_REE),'o',color='cornflowerblue',markersize=20)
     plt.semilogy(REE,(mars1.zagami/mars1.CI_REE),'o',color='#D4B1B1',markersize=20)
     plt.semilogy(REE,(mars1.all_REE_init_conc/mars1.CI_REE),"p",color='firebrick',markersize=30)
+
     plt.semilogy(REE,(mars1.CREERM_80/mars1.CI_REE),'D',color='darkorange',markersize=20)
     #    plt.semilogy(REE,(mars1.CREERM_final/mars1.CI_REE),'o',color='darkgreen',markersize=20)
     plt.semilogy(REE,(mars1.BD_PCS4/mars1.CI_REE),'o',MarkerFacecolor='forestgreen',markeredgecolor='forestgreen',lw=2,markersize=20)
     
     plt.legend([ r'MO after 99.5$\%$ crystallization', 'NWA1068','Shergotty','Zagami','Initial abundance',r'RM after 80$\%$ crystallization', 'Borg and Draper (2003)'],loc=4,fancybox=True,framealpha=0.7)
+
+    plt.semilogy(REE,(mars1.CREERM_80/mars1.CI_REE),'D',color='forestgreen',markersize=30)
+   
+    plt.semilogy(REE,(mars1.BD_PCS4/mars1.CI_REE),'D',MarkerFacecolor='darkorange',markeredgecolor='darkorange',lw=2,alpha=0.5,markersize=30)
+
+    plt.semilogy(REE,(mars1.EETA79001A/mars1.CI_REE),'o',MarkerFacecolor='darkcyan',markeredgecolor='black',lw=2,markersize=20)
+    plt.semilogy(REE,(mars1.Y980459/mars1.CI_REE),'o',MarkerFacecolor='lightgray', markeredgecolor='black',lw=2,markersize=20)
+    
+    plt.legend([ r'MO after 99.5$\%$ crystallization', 'NWA1068','Shergotty','Zagami','Initial abundance',r'RM after 80$\%$ crystallization', 'Borg and Draper (2003)','EETA79001A','Y980459'],loc=4,fancybox=True,framealpha=0.7)
+
     plt.ylabel('Concentration/Chondrite',fontsize=30)
 
     curve1=(mars_const.CREERM_80/mars_const.CI_REE)
     curve2=(mars_const.CREERM_90/mars_const.CI_REE)
+
     plt.plot(REE,curve1,'-',color='forestgreen',lw=6)
     plt.plot(REE,curve2,'-',color='forestgreen',lw=6)
     ax=plt.gca()
@@ -582,6 +659,92 @@ def REE_plots(mars1,mars_const):
 
     arrow1 = patches.FancyArrowPatch((23.2, 1.8), (23.2, 1.1), color='darkorange',mutation_scale=100)
     arrow2 = patches.FancyArrowPatch((23.2, 1.9), (23.2, 22), color='darkorange',mutation_scale=100)
+
+    plt.plot(REE,curve1,'-',color='darkorange',lw=6)
+    plt.plot(REE,curve2,'-',color='darkorange',lw=6)
+    ax=plt.gca()
+    ax.fill_between(REE,curve1,curve2,color='darkorange',alpha=0.3)
+    
+    plt.semilogy(REE,(mars1.CREEMO_final/mars1.CI_REE),color='forestgreen')
+    plt.semilogy(REE,(mars1.NWA1068/mars1.CI_REE),'-',color='#005668')
+    plt.semilogy(REE,(mars1.shergotty/mars1.CI_REE),'-',color='darkgreen')
+    plt.semilogy(REE,(mars1.zagami/mars1.CI_REE),'-',color='darkgreen')
+    plt.semilogy(REE,(mars1.all_REE_init_conc/mars1.CI_REE),'-',color='firebrick')
+    plt.semilogy(REE,(mars1.CREERM_80/mars1.CI_REE),'-',color='forestgreen')
+    plt.semilogy(REE,(mars1.BD_PCS4/mars1.CI_REE),'-',color='darkorange')
+    plt.semilogy(REE,(mars1.Y980459/mars1.CI_REE),'-',color='lightgray')
+    plt.semilogy(REE,(mars1.EETA79001A/mars1.CI_REE),'-',color='darkcyan')
+    plt.text(14,0.4,r'Constant $F_{tl}$ RM 80 - 90 \%',fontsize=30,color='darkorange',rotation=14)
+    
+    
+    ax=plt.gca()
+    plt.xticks(REE,REE_label,rotation='vertical',fontsize=30)
+
+    arrow1 = patches.FancyArrowPatch((23.2, 1.8), (23.2, 1.1), color='forestgreen',mutation_scale=100)
+    arrow2 = patches.FancyArrowPatch((23.2, 1.9), (23.2, 22), color='forestgreen',mutation_scale=100)
+    ax.add_patch(arrow1)
+    ax.add_patch(arrow2)
+    # Create an output for data table
+    data_out=np.array([REE_label,mars1.CREEMO_final*1.0e6,mars1.CREERM_80*1.0e6,mars_const.CREERM_80*1.0e6,mars1.BD_PCS4*1.0e6]).T
+    print np.shape(data_out)
+    np.savetxt('Trace_elements.csv',data_out,fmt='%s',delimiter=',',header=str(['Elements','MO after 99.5%','RM after 80%','RM constant Ftl after 80%','Borg and Draper PCS4']))
+def REE_plots_no_meteorites(mars1,mars_const):
+    """"""
+    
+    ##############################################
+    # Plot: compare REE concentrations
+    # 
+    ##############################################
+    # Create an array for labels for REE concentration
+    REE=np.zeros(23)
+    for ii in range (0,23):
+        REE[ii]=ii
+    
+        REE_label=['Rb', 'Ba', 'Th', 'U','Ta', 'K', 'La', 'Ce' ,'P' , 'Sr' , 'Nd' , 'Sm' , 'Zr' ,  'Hf' , 'Eu' ,'Gd' ,  'Tb' ,  'Dy' ,  'Y' ,  'Er' ,   'Tm' ,  'Yb' ,   'Lu']
+
+    plt.figure(figsize=(16,20))
+
+    plt.semilogy(REE,(mars1.CREEMO_final/mars1.CI_REE),'s',color='forestgreen',markersize=30)
+    
+    #plt.semilogy(REE,(mars1.NWA1068/mars1.CI_REE),'o',color='None',markersize=20)
+    #plt.semilogy(REE,(mars1.shergotty/mars1.CI_REE),'o',color='cornflowerblue',markersize=20)
+    #plt.semilogy(REE,(mars1.zagami/mars1.CI_REE),'o',color='#D4B1B1',markersize=20)
+    plt.semilogy(REE,(mars1.all_REE_init_conc/mars1.CI_REE),"p",color='firebrick',markersize=30)
+    plt.semilogy(REE,(mars1.CREERM_80/mars1.CI_REE),'D',color='forestgreen',markersize=30)
+   
+    plt.semilogy(REE,(mars1.BD_PCS4/mars1.CI_REE),'D',MarkerFacecolor='darkorange',markeredgecolor='darkorange',lw=2,alpha=0.5,markersize=30)
+
+    #plt.semilogy(REE,(mars1.EETA79001A/mars1.CI_REE),'o',MarkerFacecolor='darkcyan',markeredgecolor='black',lw=2,markersize=20)
+    #plt.semilogy(REE,(mars1.Y980459/mars1.CI_REE),'o',MarkerFacecolor='lightgray', markeredgecolor='black',lw=2,markersize=20)
+    
+    #plt.legend([ r'MO after 99.5$\%$ crystallization', 'NWA1068','Shergotty','Zagami','Initial abundance',r'RM after 80$\%$ crystallization', 'Borg and Draper (2003)','EETA79001A','Y980459'],loc=4,fancybox=True,framealpha=0.7)
+    plt.ylabel('Concentration/Chondrite',fontsize=30)
+
+    curve1=(mars_const.CREERM_80/mars_const.CI_REE)
+    curve2=(mars_const.CREERM_90/mars_const.CI_REE)
+    plt.plot(REE,curve1,'-',color='darkorange',lw=6)
+    plt.plot(REE,curve2,'-',color='darkorange',lw=6)
+    ax=plt.gca()
+    ax.fill_between(REE,curve1,curve2,color='darkorange',alpha=0.3)
+    
+    plt.semilogy(REE,(mars1.CREEMO_final/mars1.CI_REE),color='forestgreen')
+    #plt.semilogy(REE,(mars1.NWA1068/mars1.CI_REE),'-',color='#005668')
+    #plt.semilogy(REE,(mars1.shergotty/mars1.CI_REE),'-',color='darkgreen')
+    #plt.semilogy(REE,(mars1.zagami/mars1.CI_REE),'-',color='darkgreen')
+    plt.semilogy(REE,(mars1.all_REE_init_conc/mars1.CI_REE),'-',color='firebrick')
+    plt.semilogy(REE,(mars1.CREERM_80/mars1.CI_REE),'-',color='forestgreen')
+    plt.semilogy(REE,(mars1.BD_PCS4/mars1.CI_REE),'-',color='darkorange')
+    #plt.semilogy(REE,(mars1.Y980459/mars1.CI_REE),'-',color='lightgray')
+    #plt.semilogy(REE,(mars1.EETA79001A/mars1.CI_REE),'-',color='darkcyan')
+    #plt.text(14,0.4,r'Constant $F_{tl}$ RM 80 - 90 \%',fontsize=30,color='darkorange',rotation=14)
+    
+    
+    ax=plt.gca()
+    plt.xticks(REE,REE_label,rotation='vertical',fontsize=30)
+
+    arrow1 = patches.FancyArrowPatch((23.2, 1.8), (23.2, 1.1), color='forestgreen',mutation_scale=100)
+    arrow2 = patches.FancyArrowPatch((23.2, 1.9), (23.2, 22), color='forestgreen',mutation_scale=100)
+
     ax.add_patch(arrow1)
     ax.add_patch(arrow2)
     # Create an output for data table
@@ -624,7 +787,9 @@ def solidus_plot():
     plt.xticks(temp_label)
     ax.fill_betweenx(r_mantle_km,front, solidus, where=front>= solidus, alpha=0.7,  facecolor='teal',)
     
-    plt.legend(['Liquidus','Front','Solidus'],loc=1,fancybox=True,framealpha=0.7)
+
+    plt.legend(['Liquidus','Front','Solidus'],loc=3,fancybox=True,framealpha=0.7)
+
     plt.plot(T1,r_mantle_km,'-k',linewidth=4)
     plt.plot(T2,r_mantle_km,'-k',linewidth=4)
     plt.plot(2290,146.0,'o',color='tomato',markersize=20,alpha=0.7)
@@ -636,13 +801,22 @@ def solidus_plot():
     plt.text(2150,1350,r'2050$^\mathrm{o}$ adiabat',rotation=-85,fontsize=30)
     plt.xlabel(r'Temperature ($^\mathrm{o}$C)',fontsize=30)
     plt.ylabel('Height above CMB (km)',fontsize=30)
-    plt.text(1400,150,'(a)',fontsize=60,fontweight='bold')
-    #
+
+    #plt.text(1400,150,'(a)',fontsize=60,fontweight='bold')
+    plt.text(2400,1850,'(a)',fontsize=60,fontweight='bold')
+    FFL=130 #km thickness of the FF
+    rect=patches.Rectangle((1200,1776),1600, -FFL, color='firebrick',alpha=0.4)
+    ax.add_patch(rect)
+    plt.text(2100,1700,'FF %3.0f km thick'%FFL)
+
     plt.subplot(1,2,2)
     mars_sol.radius_temperature_analytical(plot=True)
     plt.xticks(temp_label)
     plt.ylim(0.0,2000.0)
-    plt.text(1400,150,'(b)',fontsize=60,fontweight='bold')
+
+    #plt.text(1400,150,'(b)',fontsize=60,fontweight='bold')
+    plt.text(2400,1850,'(b)',fontsize=60,fontweight='bold')
+
     #
     #Plot dadT if neede
     #plt.subplot(1,3,1)
@@ -653,3 +827,86 @@ def solidus_plot():
     #plt.plot(T,dadT/1.0e3,'or')
     
     del mars_sol
+
+def tau_calc():
+    """This function calculates the ranges of
+    compaction time for a martian MO"""
+    L = 130e3 #m, thickness of FF
+    rho = 4287.0#kg/m^3 density of mantle
+    g = 3.711 # m/s^2, surface gravity of Mars
+    c1 = 9.05e13 # Pas/m^2 frictional resistance
+    c2 = 9.05e15 # Pas/m^2 frictional resistance
+    tau1_sec=L*c1/rho/g
+    tau2_sec=L*c2/rho/g
+    sec2Ma=1.0/(365*24*3600*1.0e6) # seconds to Ma
+    tau1=tau1_sec*sec2Ma
+    tau2=tau2_sec*sec2Ma
+    print  '#####################################'
+    print  ' Estimates for compaction time in Ma:',tau1,tau2
+    print  '#####################################'
+def compare_compaction(tau,redox):
+    """This function reads the values of time averaged compaction
+    from a data file and plots them against compaction times"""
+    n1=np.size(tau)
+    n2=np.size(redox)
+    Ftl=np.zeros([n1,n2])
+    Freezing=np.zeros([n1,n2])
+    MCO2RM=np.zeros([n1,n2])
+    MH2ORM=np.zeros([n1,n2])
+    fname1='Ftl_averaged_k_tau.csv'
+    Ftl=np.loadtxt(fname1,delimiter=",")
+    #Header 'Time averaged F_tl values. Data in columns correspond to redox factors [0.1,1.0,10.0,100.0,1000.0], data in rows correspond to compaction times [1.0,0.5,0.3,0.2,0.1,0.01,0.001] Ma'
+    fname2='Freezing_time_k_tau.csv'
+    Freezing=np.loadtxt(fname2,delimiter=",")
+    # Header :'Time taken for 99.5% crystallization. Data in columns correspond to redox factors [0.1,1.0,10.0,100.0,1000.0], data in rows correspond to compaction times [1.0,0.5,0.3,0.2,0.1,0.01,0.001] Ma'
+    fname3='MCO2RM_averaged_k_tau.csv'
+    MCO2RM=np.loadtxt(fname3,delimiter=",")
+    fname4='MH2ORM_averaged_k_tau.csv'
+    MH2ORM=np.loadtxt(fname4,delimiter=",")
+    GEL=MH2ORM/1.0e3/144.4e12  #GEL in m
+    plt.figure(figsize=(12,16))
+    plt.subplot(2,1,1)
+    plt.semilogx(tau,Ftl[:,2],'s',mfc='forestgreen',markersize=30)
+    plt.semilogx(tau,Ftl[:,2],'-',color='forestgreen',lw=3)
+    
+    plt.ylim(0,0.35)
+    plt.ylabel(r'Time averaged $F_{tl}$',fontsize=30)
+    plt.subplot(2,1,2)
+    plt.semilogx(tau,GEL[:,2],'s',mfc='forestgreen',markersize=30)
+    plt.semilogx(tau,GEL[:,2],'-',color='forestgreen',lw=3)
+    plt.ylabel(r'H$_2$O GEL (m)',fontsize=30)
+    plt.xlabel(r'$\tau$ (Ma)',fontsize=30)
+    plt.ylim(1000,6000)
+    plt.figure(figsize=(12,16))
+    plt.subplot(2,1,1)
+    
+    plt.semilogx(tau,MCO2RM[:,4],'-',color='dimgray',lw=3)
+    plt.semilogx(tau,MCO2RM[:,3],'--',color='darkgray',lw=3)
+    plt.semilogx(tau,MCO2RM[:,2],'-.',color='lightsteelblue',lw=3)
+    plt.semilogx(tau,MCO2RM[:,1],':',color='cornflowerblue',lw=3)
+    plt.semilogx(tau,MCO2RM[:,0],linestyle=(0, (3, 10, 1, 10, 1, 10)),color='steelblue',lw=3)
+    
+    plt.legend([r'$K^\ast =$%3.2f'%redox[4],r'$K^\ast =$%3.2f'%redox[3],r'$K^\ast =$%3.2f'%redox[2],r'$K^\ast =$%3.2f'%redox[1],r'$K^\ast =$%3.2f'%redox[0]],fancybox=True,framealpha=0.7,loc=2)
+    
+    plt.semilogx(tau,MCO2RM[:,4],'o',mfc='dimgray',markersize=30)
+    plt.semilogx(tau,MCO2RM[:,3],'o',mfc='darkgray',markersize=30)
+    plt.semilogx(tau,MCO2RM[:,2],'o',mfc='lightsteelblue',markersize=30)
+    plt.semilogx(tau,MCO2RM[:,1],'o',mfc='cornflowerblue',markersize=30)
+    plt.semilogx(tau,MCO2RM[:,0],'o',mfc='steelblue',markersize=30)
+    #plt.xlabel(r'$\tau$ (Ma)',fontsize=30)
+    plt.ylabel('Mantle CO$_2$ mass (kg)',fontsize=30)
+    plt.subplot(2,1,2)
+    plt.semilogx(tau,Freezing[:,4],'-',color='dimgray',lw=3)
+    plt.semilogx(tau,Freezing[:,3],'--',color='darkgray',lw=3)
+    plt.semilogx(tau,Freezing[:,2],'-.',color='lightsteelblue',lw=3)
+    plt.semilogx(tau,Freezing[:,1],':',color='cornflowerblue',lw=3)
+    plt.semilogx(tau,Freezing[:,0],linestyle=(0, (3, 10, 1, 10, 1, 10)),color='steelblue',lw=3)
+    
+    plt.semilogx(tau,Freezing[:,4],'o',mfc='dimgray',markersize=30)
+    plt.semilogx(tau,Freezing[:,3],'o',mfc='darkgray',markersize=30)
+    plt.semilogx(tau,Freezing[:,2],'o',mfc='lightsteelblue',markersize=30)
+    plt.semilogx(tau,Freezing[:,1],'o',mfc='cornflowerblue',markersize=30)
+    plt.semilogx(tau,Freezing[:,0],'o',mfc='steelblue',markersize=30)
+    plt.xlabel(r'$\tau$ (Ma)',fontsize=30)
+    plt.ylabel('Time to crystallization (Ma)', fontsize=30)
+
