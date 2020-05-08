@@ -2,6 +2,7 @@ import numpy as np
 import scipy.optimize 
 import matplotlib.pylab as plt
 from matplotlib import rc
+import pandas as pd
 #rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 
 ## for Palatino and other serif fonts use:
@@ -140,12 +141,18 @@ class REE:
                                 0.43,1.64,0.0,2.16,0.0,1.33,0.0,1.19,0.176])
     zagami =1.0e-6*np.array([5.69,25.3,0.0,0.0,0.0,1243.0,1.6,3.75,0.0,45.9,2.89,1.17,0.0,0.0,\
                              0.476,0.0,0.0,2.66,0.0,1.6,0.0,1.38,0.201])
+    #Y980459
+    Y980459=1.0e-6*np.array([0.0,1.54,0.0213,0.00596,0.0,0.0,0.166,0.426,0.0,0.0,0.567,\
+                            0.466,0.0,0.0,0.254,1.13,0.244,1.7,0.0,1.09,0.155,0.971,0.15])
+    EETA79001A=1.0e-6*np.array([0.0,0.0,0.08,0.019,0.0,0.0,0.4,1.27,0.0,0.0,1.35,0.74,0.0,0.0,0.37,0.0,0.28,1.9,0.0,0.0,0.18,1.12,0.17])
+
     # Trace element concentration in trapped liqiuid (TL) and solid cumulates after 60-90%
     # crystallization PCS4, from Borg and Draper, 2003, table 6
     BD_TL995=1.0e-6*np.array([479.0,1687.0,17.9, 4.93, 7.64, 125682.0,107.0,289.0,201448.0,2799.0,\
                               185.0,48.5,994.0,27.3,10.7,35.8,6.54,39.2,248.0,28.0,4.63,25.5,4.63 ])
     BD_PCS4 =1.0e-6*np.array([0.044, 0.23, 0.0016, 0.0009, 0.0060, 11.1, 0.055, 0.19,126.0, 4.15, 0.24,\
                               0.12, 4.47, 0.12, 0.063, 0.28, 0.049, 0.33, 1.90, 0.21,0.033,0.184, 0.034])
+    
         ##########################################
 class Earth(CO2,H2O):
     """This class contains functions for the Earth"""
@@ -182,12 +189,14 @@ class Earth(CO2,H2O):
 class Mars(CO2,H2O,REE):
     """This class contains functions essential for Mars"""
     def __init__(self,tfinal=9.0e6*365.0*24.0*3600.0,noceans=1.0,\
-                 HoverC=0.4,nsteps=1000,redox_factor=1.0):
+                 HoverC=0.4,nsteps=1000,redox_factor=1.0,tau=3.15e13 ):
         """Initial definitions, enter the number of
         oceans of H2O in the initial composition
         and the H:C ratio during initiation. Default values
         are 1 ocean and 0.4, respectively.
-        nsteps is the number of steps in evolution"""
+        nsteps is the number of steps in evolution. 
+        Also the default value of compaction time is for
+        length 10 km and velocity 0.01m/yr"""
         self.area=144.4e12            # m^2 surface area of Mars
         self.radius=3.39e6            # m radius of Mars
         self.g=3.711                  # m/s^2, surface gravity of Mars
@@ -296,7 +305,7 @@ class Mars(CO2,H2O,REE):
         # compaction time for length 50 km and velocity 0.1m/yr
         #self.tau=1.577e13            #s
         # compaction time for length 10 km and velocity 0.01m/yr
-        self.tau=3.15e13             #s
+        self.tau=tau                 #s
         self.phic=0.3                #dimensionless disaggregation melt fraction
         self.deltaT=100              #K difference between solidus and freezing front
         self.Ftl=0.0                 #Initial trapped melt fraction
@@ -928,7 +937,7 @@ class Mars(CO2,H2O,REE):
             self.heatflux[ii]=self.heat_flux(self.T[ii],e)
             #calculate trapped melt fraction
             if const_Ftl == False:
-                self.Ftl[ii]=self.phic*self.tau*dTdt/self.deltaT
+                self.Ftl[ii]=self.phic*self.tau*dTdt[ii]/self.deltaT
             else:
                 self.Ftl[ii]=0.01
                 
@@ -1112,7 +1121,7 @@ class Mars(CO2,H2O,REE):
             a_high=p_high[0]*T_high**2+p_high[1]*T_high+p_high[2]
             a_low=p_low[0]*T_low**3+p_low[1]*T_low**2+p_low[2]*T_low+p_low[3]
             plt.plot(T_high,a_high/1.0e3,'-',color='steelblue',lw=4)
-            plt.legend(['Numerical','Fit'],fancybox=True,framealpha=0.7)
+            plt.legend(['Numerical','Fit'],fancybox=True,framealpha=0.7,loc=3)
             plt.plot(2050,146.0,'o',color='tomato',markersize=20,alpha=0.7)
             plt.plot(1550,1776.0,'o',color='tomato',markersize=20,alpha=0.7)
             plt.plot(T_low,a_low/1.0e3,'-',color='steelblue',lw=4)
@@ -1196,6 +1205,7 @@ class Mars_read(REE):
                     self.Eu_init_conc, self.Gd_init_conc, self.Tb_init_conc, \
                     self.Dy_init_conc, self.Y_init_conc, self.Er_init_conc,  \
                     self.Tm_init_conc, self.Yb_init_conc,  self.Lu_init_conc ])
+        
     def output_filenames(self,const=False):
         """Generates file names for output
         The optional input const is for a constant trapped
@@ -1285,6 +1295,9 @@ class Mars_read(REE):
         ax1.spines['right'].set_position(('outward', 0))
         plt.ylabel(r'Mass ($10^{23}$ kg)',fontsize=30,labelpad=20)
         ax1.set_yticks([2.0,4.0,6.0])
+        #ax1=plt.subplot(4,1,3)
+        #plt.plot(self.tma,self.Ftl,'forestgreen',linewidth=4)
+        #plt.ylabel(r'$F_tl$',fontsize=30)
         ax1=plt.subplot(3,1,3)
         plt.plot(self.tma,self.akm,'forestgreen',linewidth=4)
         plt.ylabel('RM radius (km)',fontsize=30)
@@ -1321,4 +1334,60 @@ class Mars_read(REE):
         """
         M = h*self.area* rho_fluid
         return(M)
+
+def compare_compaction_redox_write(tau,redox):
+    """This function takes in two arrays containing
+    values of compaction time and redox factors."""
+    path=np.array(['./data/', './data/t_0.5Ma/', './data/t_0.3Ma/','./data/t_0.2Ma/','./data/t_0.1Ma/','./data/t_0.01Ma/','./data/t_0.001Ma/'])
+    n1=np.size(tau)
+    n2=np.size(redox)
+    Ftl=np.zeros([n1,n2])
+    MCO2RM=np.zeros([n1,n2])
+    MH2ORM=np.zeros([n1,n2])
+    Freezing=np.zeros([n1,n2])
+    for ii in range (0,n1):
+        for jj in range (0,n2):
+            fname=path[ii]+'Mars_noceansH2O_0.8_HC_0.55_redox_factor_'+str(redox[jj])+'_t_T_rad_F_MMO_MRM_Ftl.csv'
+            data=np.loadtxt(fname,delimiter=',')
+            Ftl[ii,jj] = np.mean(data[:,6])
+            Freezing[ii,jj]=np.max(data[:,0])
+            del data,fname
+            fname=path[ii]+'Mars_noceansH2O_0.8_HC_0.55_redox_factor_'+str(redox[jj])+'_t_MCO2RM_MCO2MO_MCO2PA_CCO2RM_CCO2MO.csv'
+            data=np.loadtxt(fname,delimiter=',')
+            MCO2RM[ii,jj]=np.max(data[:,1])
+            del data,fname
+            fname=path[ii]+'Mars_noceansH2O_0.8_HC_0.55_redox_factor_'+str(redox[jj])+'_t_MH2ORM_MH2OMO_MH2OPA_CH2ORM_CH2OMO.csv'
+            data=np.loadtxt(fname,delimiter=',')
+            MH2ORM[ii,jj]=np.max(data[:,1])
+            del data,fname
+            
+    fname1='Ftl_averaged_k_tau.csv'
+    txt1='Time averaged F_tl values. Data in columns correspond to redox factors [0.1,1.0,10.0,100.0,1000.0], data in rows correspond to compaction times [1.0,0.5,0.3,0.2,0.1,0.01,0.001] Ma'
+    np.savetxt(fname1,Ftl,delimiter=",",header=txt1)
+
+    fname1='Freezing_time_k_tau.csv'
+    txt1='Time taken for 99.5% crystallization. Data in columns correspond to redox factors [0.1,1.0,10.0,100.0,1000.0], data in rows correspond to compaction times [1.0,0.5,0.3,0.2,0.1,0.01,0.001] Ma'
+    np.savetxt(fname1,Freezing,delimiter=",",header=txt1)
+
+    fname2='MCO2RM_averaged_k_tau.csv'
+    txt2='Final MCO2RM values. Data in columns correspond to redox factors [0.1,1.0,10.0,100.0,1000.0], data in rows correspond to compaction times [1.0,0.5,0.3,0.2,0.1,0.01,0.001] Ma'
+    np.savetxt(fname2,MCO2RM,delimiter=",",header=txt2)
+    fname3='MH2ORM_averaged_k_tau.csv'
+    txt3='Final MH2ORM values. Data in columns correspond to redox factors [0.1,1.0,10.0,100.0,1000.0], data in rows correspond to compaction times [1.0,0.5,0.3,0.2,0.1,0.01,0.001] Ma'
+    np.savetxt(fname3,MH2ORM,delimiter=",",header=txt3)
+    
+    #Ftl_df= pd.DataFrame(data=Ftl, index=tau,  columns=redox)
+    #MCO2RM_df= pd.DataFrame(data=MCO2RM, index=tau,  columns=redox) 
+    plt.figure(figsize=(16,12))
+    plt.semilogx(tau,Ftl,'s',mfc='forestgreen',markersize=30)
+
+    #plt.plot(tau,Ftl[:,1],'s',markersize=30)
+    #plt.plot(tau,Ftl[:,2],'s',markersize=30)
+    #plt.plot(tau,Ftl[:,3],'s',markersize=30)
+    #plt.plot(tau,Ftl[:,4],'s',markersize=30)
+
+    #plt.legend([r'$K^\ast$ =%3.4f'%redox[0],r'$K^\ast$ =%3.4f'%redox[1],r'$K^\ast$ =%3.4f'%redox[2],r'$K^\ast$ =%3.4f'%redox[3],r'$K^\ast$ =%3.4f'%redox[4]],loc=4, fancybox=True,framealpha=0.7)
+    plt.xlabel(r'$\tau$ (Ma)',fontsize=30)
+    plt.ylabel(r'Time averaged $F_{tl}$',fontsize=30)
+
 
