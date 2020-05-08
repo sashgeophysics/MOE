@@ -940,8 +940,6 @@ class Mars(CO2,H2O,REE):
 
                 self.Ftl[ii]=self.phic*self.tau*dTdt[ii]/self.deltaT
 
-                self.Ftl[ii]=self.phic*self.tau*dTdt/self.deltaT
-
             else:
                 self.Ftl[ii]=0.01
                 

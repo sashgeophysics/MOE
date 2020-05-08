@@ -24,9 +24,9 @@ n_oceans=0.6
 H_over_C = 0.55
 redox_fac= np.array([0.01,0.1,1.0,10.0,100.0,1000.0,1.0e4])
 #redox_fac=1.0        
-for ii in range (0,7):
-    mars=Mars(noceans=n_oceans,HoverC=H_over_C, nsteps=5000000,redox_factor=redox_fac[ii])
-    mars.time_marching(4.0,const_Ftl=True)
+#for ii in range (0,7):
+#    mars=Mars(noceans=n_oceans,HoverC=H_over_C, nsteps=5000000,redox_factor=redox_fac[ii])
+#    mars.time_marching(4.0,const_Ftl=True)
 
 n_oceans=0.8
 #n_oceans=np.array([0.01,0.04,0.09,0.2,0.3,0.4,0.5,0.6,0.7,0.8,1.0])
